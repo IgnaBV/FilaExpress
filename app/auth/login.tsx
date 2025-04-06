@@ -5,31 +5,51 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
 } from 'react-native';
 import { router } from 'expo-router';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
+import Toast from 'react-native-toast-message';
 
 export default function LoginScreen() {
   const [numero, setNumero] = useState('');
   const [password, setPassword] = useState('');
 
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? 'light'];
+
   const handleLogin = () => {
     if (!numero || !password) {
-      Alert.alert('Campos incompletos', 'Ingresá tu número y contraseña');
+      Toast.show({
+        type: 'error',
+        text1: 'Campos incompletos',
+        text2: 'Ingresá tu número y contraseña',
+      });
       return;
     }
 
     if (numero.length !== 8) {
-      Alert.alert('Número inválido', 'El número debe tener 8 dígitos');
+      Toast.show({
+        type: 'error',
+        text1: 'Número inválido',
+        text2: 'El número debe tener 8 dígitos',
+      });
       return;
     }
 
     // Simulación de login exitoso
     if (numero === '11111111' && password === '123') {
-      Alert.alert('Bienvenido');
+      Toast.show({
+        type: 'success',
+        text1: 'Bienvenido',
+      });
       router.replace('/main');
     } else {
-      Alert.alert('Credenciales incorrectas');
+      Toast.show({
+        type: 'error',
+        text1: 'Credenciales incorrectas',
+        text2: 'Verificá tu número y contraseña',
+      });
     }
   };
 
@@ -65,12 +85,17 @@ export default function LoginScreen() {
         style={styles.input}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: theme.primary }]}
+        onPress={handleLogin}
+      >
         <Text style={styles.buttonText}>Ingresar</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push('/auth/register')}>
-        <Text style={styles.link}>¿No tienes cuenta? Registrate</Text>
+        <Text style={[styles.link, { color: theme.primary }]}>
+          ¿No tienes cuenta? Registrate
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -96,9 +121,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15, marginBottom: 15, borderWidth: 1, borderColor: '#DADADA',
   },
   button: {
-    height: 50, backgroundColor: '#FF6B00', borderRadius: 10,
+    height: 50, borderRadius: 10,
     justifyContent: 'center', alignItems: 'center', marginBottom: 15,
   },
   buttonText: { color: '#fff', fontSize: 17, fontWeight: '600' },
-  link: { color: '#FF6B00', fontSize: 15, textAlign: 'center', textDecorationLine: 'underline' },
+  link: { fontSize: 15, textAlign: 'center', textDecorationLine: 'underline' },
 });

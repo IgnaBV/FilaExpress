@@ -5,31 +5,42 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
 } from 'react-native';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons'; // icono de flecha atrás
+import { Ionicons } from '@expo/vector-icons';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
+import Toast from 'react-native-toast-message';
 
 export default function RegisterScreen() {
   const [nombre, setNombre] = useState('');
   const [numero, setNumero] = useState('');
   const [password, setPassword] = useState('');
 
-  // Cuando el usuario presiona "Registrarse"
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? 'light'];
+
   const handleRegister = () => {
     if (!nombre || !numero || !password) {
-      Alert.alert('Todos los campos son obligatorios');
+      Toast.show({
+        type: 'error',
+        text1: 'Campos obligatorios',
+        text2: 'Por favor completá todos los campos',
+      });
       return;
     }
 
     if (numero.length !== 8) {
-      Alert.alert('Número inválido', 'El número debe tener 8 dígitos');
+      Toast.show({
+        type: 'error',
+        text1: 'Número inválido',
+        text2: 'El número debe tener 8 dígitos',
+      });
       return;
     }
 
     const telefonoCompleto = `+591${numero}`;
 
-    // Simula envío de datos y redirige con los parámetros a verificar
     router.push({
       pathname: '/auth/verify-register',
       params: {
@@ -40,7 +51,6 @@ export default function RegisterScreen() {
     });
   };
 
-  // Limita la entrada a solo números
   const handleNumeroChange = (text: string) => {
     const soloNumeros = text.replace(/[^0-9]/g, '');
     setNumero(soloNumeros);
@@ -48,7 +58,6 @@ export default function RegisterScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Flecha para volver al login */}
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
         <Ionicons name="arrow-back" size={24} color="#000" />
       </TouchableOpacity>
@@ -84,14 +93,16 @@ export default function RegisterScreen() {
         style={styles.input}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: theme.primary }]}
+        onPress={handleRegister}
+      >
         <Text style={styles.buttonText}>Registrarse</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-// 🎨 Estilos personalizados
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -143,7 +154,6 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 50,
-    backgroundColor: '#FF6B00',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
