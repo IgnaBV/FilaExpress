@@ -6,29 +6,42 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
+import Toast from 'react-native-toast-message';
 
 export default function VerifyRegisterScreen() {
   const { nombre, numero, password } = useLocalSearchParams();
   const [codigo, setCodigo] = useState('');
 
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? 'light'];
+
   const handleVerify = () => {
     if (!codigo) {
-      Alert.alert('Código requerido');
+      Toast.show({
+        type: 'error',
+        text1: 'Código requerido',
+        text2: 'Por favor ingresá el código de verificación',
+      });
       return;
     }
 
-    // Simula el guardado del usuario y redirección
     console.log('Usuario registrado:', { nombre, numero, password });
-    Alert.alert('✅ Registro exitoso');
-    router.replace('/main');
+    Toast.show({
+      type: 'success',
+      text1: '✅ Registro exitoso',
+    });
+
+    setTimeout(() => {
+      router.replace('/main');
+    }, 1000);
   };
 
   return (
     <View style={styles.container}>
-      {/* Flecha para volver */}
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
         <Ionicons name="arrow-back" size={24} color="#000" />
       </TouchableOpacity>
@@ -45,9 +58,14 @@ export default function VerifyRegisterScreen() {
         maxLength={6}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleVerify}>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: theme.primary }]}
+        onPress={handleVerify}
+      >
         <Text style={styles.buttonText}>Verificar y continuar</Text>
       </TouchableOpacity>
+
+      <Toast />
     </View>
   );
 }
@@ -57,12 +75,19 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },
   subtitle: { fontSize: 15, color: '#555', marginBottom: 20, textAlign: 'center' },
   input: {
-    height: 50, backgroundColor: '#fff', borderRadius: 10,
-    paddingHorizontal: 15, marginBottom: 15, borderWidth: 1, borderColor: '#DADADA',
+    height: 50,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#DADADA',
   },
   button: {
-    height: 50, backgroundColor: '#FF6B00', borderRadius: 10,
-    justifyContent: 'center', alignItems: 'center',
+    height: 50,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonText: { color: '#fff', fontSize: 17, fontWeight: '600' },
   backButton: {
