@@ -11,7 +11,8 @@ import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Region } from 'react-native-maps';
-
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
 
 const surtidoresSimulados = [
   { id: 1, nombre: 'Surtidor El Alto', lat: -16.511, lng: -68.123 },
@@ -24,7 +25,9 @@ export default function MainScreen() {
   const [busqueda, setBusqueda] = useState('');
   const [surtidoresFiltrados, setSurtidoresFiltrados] = useState(surtidoresSimulados);
 
-  // Obtener ubicación actual
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? 'light'];
+
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -40,7 +43,6 @@ export default function MainScreen() {
     })();
   }, []);
 
-  // Filtrar surtidores según texto
   useEffect(() => {
     const filtrados = surtidoresSimulados.filter((s) =>
       s.nombre.toLowerCase().includes(busqueda.toLowerCase())
@@ -58,12 +60,10 @@ export default function MainScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Icono de perfil */}
       <TouchableOpacity onPress={() => router.push('/profile/complete')} style={styles.profileIcon}>
         <Ionicons name="person-circle-outline" size={30} color="#333" />
       </TouchableOpacity>
 
-      {/* Buscador */}
       <TextInput
         placeholder="Buscar surtidor..."
         value={busqueda}
@@ -71,7 +71,6 @@ export default function MainScreen() {
         style={styles.searchBar}
       />
 
-      {/* Mapa */}
       <MapView style={styles.map} initialRegion={region}>
         <Marker
           coordinate={{
@@ -90,12 +89,17 @@ export default function MainScreen() {
         ))}
       </MapView>
 
-      {/* Botones */}
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push('/requests/create')}>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: theme.primary }]}
+          onPress={() => router.push('/requests/create')}
+        >
           <Text style={styles.buttonText}>Crear solicitud</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => router.push('/requests/active')}>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: theme.primary }]}
+          onPress={() => router.push('/requests/active')}
+        >
           <Text style={styles.buttonText}>Ver solicitudes</Text>
         </TouchableOpacity>
       </View>
@@ -139,7 +143,6 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   button: {
-    backgroundColor: '#FF6B00',
     padding: 14,
     borderRadius: 10,
     marginBottom: 10,
